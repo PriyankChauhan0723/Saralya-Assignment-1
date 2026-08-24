@@ -1,0 +1,335 @@
+{
+  "info": {
+    "_postman_id": "8f5a11c0-3b9e-4b20-801b-9a4f780b91d2",
+    "name": "SaralCollect - Collections Cohort Scoring API",
+    "description": "Comprehensive Postman Collection for the SaralCollect Backend Service (Assignment 1 & 2 UI Contract).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "saralcollect_secret_key_2026",
+      "type": "string"
+    },
+    {
+      "key": "importId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "sampleLoanId",
+      "value": "LN1000001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. System Health",
+      "item": [
+        {
+          "name": "Health Check (Public)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": ["{{baseUrl}}"],
+              "path": ["health"]
+            },
+            "description": "Public health check endpoint checking database and service status."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. Portfolio Ingestion",
+      "item": [
+        {
+          "name": "Upload & Ingest Portfolio CSV (Async 202)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if (jsonData.success && jsonData.data.importId) {",
+                  "    pm.collectionVariables.set('importId', jsonData.data.importId);",
+                  "    console.log('Saved importId: ' + jsonData.data.importId);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "description": "Select data/portfolio.csv or any valid CSV file"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/portfolio/import",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "portfolio", "import"]
+            },
+            "description": "Accepts CSV file, streams without holding 25k in memory, returns 202 with importId immediately."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Import Job Status & Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/portfolio/import/{{importId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "portfolio", "import", "{{importId}}"]
+            },
+            "description": "Polls background ingestion job progress, processed rows, failed count, and completion state."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "3. Cohorts & Dashboard (3x3 Matrix)",
+      "item": [
+        {
+          "name": "Get 3x3 Cohort Matrix Summary",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cohorts/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "cohorts", "summary"]
+            },
+            "description": "Returns counts and total outstanding principal for all 9 cells in one single round trip."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Borrowers by Cohort (Paginated & Filtered)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cohorts/FENCE_SITTER/borrowers?page=1&limit=20&sortBy=od_days&sortOrder=DESC&state=Bihar",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "cohorts", "FENCE_SITTER", "borrowers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "od_days",
+                  "description": "od_days | outstanding_principal | ability_score | intent_score"
+                },
+                {
+                  "key": "sortOrder",
+                  "value": "DESC",
+                  "description": "ASC | DESC"
+                },
+                {
+                  "key": "state",
+                  "value": "Bihar",
+                  "description": "Filter by state"
+                },
+                {
+                  "key": "product",
+                  "value": "JLG",
+                  "disabled": true
+                },
+                {
+                  "key": "od_bucket",
+                  "value": "31-60",
+                  "disabled": true
+                },
+                {
+                  "key": "minOutstanding",
+                  "value": "10000",
+                  "disabled": true
+                },
+                {
+                  "key": "maxOutstanding",
+                  "value": "50000",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "High-throughput paginated and filterable queue for 8,000+ borrowers per cell (<50ms)."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "4. Borrower Scorecard & Explainability",
+      "item": [
+        {
+          "name": "Get Borrower Scorecard & Agent Call Script",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/borrowers/{{sampleLoanId}}/score",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "borrowers", "{{sampleLoanId}}", "score"]
+            },
+            "description": "Returns Ability & Intent scores, bands, cohort, factor breakdowns, and agent speakable text."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "5. Score Simulation (What-If Calculator)",
+      "item": [
+        {
+          "name": "Simulate Borrower Score Overrides",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"loanId\": \"{{sampleLoanId}}\",\n  \"overrides\": {\n    \"last_coll_amount\": 10000,\n    \"od_days\": 0,\n    \"foir\": 0.45\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/v1/score/simulate",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "score", "simulate"]
+            },
+            "description": "Evaluates 'what if borrower pays 10,000 today' without persisting changes to the database."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "6. Security & Negative Cases",
+      "item": [
+        {
+          "name": "401 Unauthorized (Missing API Key)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cohorts/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "cohorts", "summary"]
+            },
+            "description": "Tests API Key rejection when x-api-key header is absent."
+          },
+          "response": []
+        },
+        {
+          "name": "404 Route Not Found",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/non_existent_endpoint",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "non_existent_endpoint"]
+            },
+            "description": "Tests standardized JSON error envelope on unknown routes."
+          },
+          "response": []
+        },
+        {
+          "name": "400 Validation Error (Limit > 200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{apiKey}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/v1/cohorts/OOPS/borrowers?limit=5000",
+              "host": ["{{baseUrl}}"],
+              "path": ["v1", "cohorts", "OOPS", "borrowers"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5000"
+                }
+              ]
+            },
+            "description": "Tests Zod validation schema rejecting query limits exceeding 200."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,170 @@
+{
+  "modelVersion": "v1.0.0-logistic-l2",
+  "algorithm": "Regularized Logistic Regression (L2, Balanced Class Weights)",
+  "trainedAt": "2026-08-21T10:46:48.875Z",
+  "features": [
+    {
+      "name": "ptp_kept_rate",
+      "displayName": "PTP Kept Rate (EMIs Paid / Total)",
+      "weight": 0.2776,
+      "mean": 0.442,
+      "std": 0.2893,
+      "description": "Proportion of scheduled EMIs honored on time"
+    },
+    {
+      "name": "repayment_velocity",
+      "displayName": "Repayment Velocity (Principal Collected / Total)",
+      "weight": 0.2776,
+      "mean": 0.442,
+      "std": 0.2893,
+      "description": "Ratio of principal repaid to total disbursed loan principal"
+    },
+    {
+      "name": "od_severity_ratio",
+      "displayName": "Overdue Severity Ratio (OD Days / 210)",
+      "weight": -0.4541,
+      "mean": 0.3526,
+      "std": 0.3114,
+      "description": "Overdue days normalized by 210-day write-off threshold (negative indicator)"
+    },
+    {
+      "name": "last_payment_recency_ratio",
+      "displayName": "Last Payment Recency Ratio (Days / 180)",
+      "weight": 0.4095,
+      "mean": 0.5352,
+      "std": 0.3074,
+      "description": "Recency of last payment received (days since payment / 180)"
+    },
+    {
+      "name": "contactability",
+      "displayName": "Contactability (Valid 10-Digit Mobile)",
+      "weight": 0.0833,
+      "mean": 0.9704,
+      "std": 0.1693,
+      "description": "Whether borrower holds a valid 10-digit reachable mobile number"
+    },
+    {
+      "name": "cycle_normalized",
+      "displayName": "Loan Cycle Count",
+      "weight": 0.1946,
+      "mean": 0.4994,
+      "std": 0.353,
+      "description": "Borrower experience tenure and discipline across loan cycles"
+    },
+    {
+      "name": "foir_capped",
+      "displayName": "EMI Burden (FOIR)",
+      "weight": -0.2026,
+      "mean": 0.7224,
+      "std": 0.1515,
+      "description": "Fixed obligation to verified income burden"
+    }
+  ],
+  "intercept": 0.1947,
+  "metrics": {
+    "trainSize": 19999,
+    "testSize": 5001,
+    "baselineAuc": 0.8283,
+    "baselineKs": 50.74,
+    "modelAuc": 0.8514,
+    "modelKs": 55.59,
+    "classBalance": {
+      "totalRows": 25000,
+      "paidCount": 19073,
+      "nonPaidCount": 5927,
+      "paidRate": 0.7629
+    },
+    "calibrationTable": [
+      {
+        "decile": 1,
+        "minScore": 3.4,
+        "maxScore": 13.5,
+        "count": 500,
+        "predictedRate": 0.0936,
+        "actualRate": 0.198,
+        "brierScore": 0.1655
+      },
+      {
+        "decile": 2,
+        "minScore": 13.5,
+        "maxScore": 27.9,
+        "count": 500,
+        "predictedRate": 0.2056,
+        "actualRate": 0.42,
+        "brierScore": 0.282
+      },
+      {
+        "decile": 3,
+        "minScore": 28,
+        "maxScore": 42.4,
+        "count": 500,
+        "predictedRate": 0.3582,
+        "actualRate": 0.676,
+        "brierScore": 0.3184
+      },
+      {
+        "decile": 4,
+        "minScore": 42.4,
+        "maxScore": 53.3,
+        "count": 500,
+        "predictedRate": 0.4801,
+        "actualRate": 0.788,
+        "brierScore": 0.2606
+      },
+      {
+        "decile": 5,
+        "minScore": 53.3,
+        "maxScore": 61.5,
+        "count": 500,
+        "predictedRate": 0.5755,
+        "actualRate": 0.862,
+        "brierScore": 0.201
+      },
+      {
+        "decile": 6,
+        "minScore": 61.5,
+        "maxScore": 67.4,
+        "count": 500,
+        "predictedRate": 0.645,
+        "actualRate": 0.882,
+        "brierScore": 0.1596
+      },
+      {
+        "decile": 7,
+        "minScore": 67.4,
+        "maxScore": 73.1,
+        "count": 500,
+        "predictedRate": 0.7021,
+        "actualRate": 0.93,
+        "brierScore": 0.1168
+      },
+      {
+        "decile": 8,
+        "minScore": 73.1,
+        "maxScore": 78.5,
+        "count": 500,
+        "predictedRate": 0.7575,
+        "actualRate": 0.942,
+        "brierScore": 0.089
+      },
+      {
+        "decile": 9,
+        "minScore": 78.5,
+        "maxScore": 84.2,
+        "count": 500,
+        "predictedRate": 0.8131,
+        "actualRate": 0.958,
+        "brierScore": 0.0618
+      },
+      {
+        "decile": 10,
+        "minScore": 84.2,
+        "maxScore": 94.1,
+        "count": 501,
+        "predictedRate": 0.8767,
+        "actualRate": 0.9721,
+        "brierScore": 0.0357
+      }
+    ]
+  }
+}

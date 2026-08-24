@@ -1,0 +1,34 @@
+export interface Loan {
+  loan_no: string;
+  member_name: string;
+  mobile_number: string;
+  is_valid_mobile: boolean;
+  state: string;
+  district: string;
+  rural_urban: string;
+  product: string;
+  disbursement_date: string | null;
+  tenure: number;
+  total_instal: number;
+  principal_total: number;
+  outstanding_principal: number;
+  prin_collected: number;
+  int_collected: number;
+  last_emi: number;
+  total_arrear: number;
+  total_emi_paid_count: number;
+  last_coll_date: string | null;
+  last_coll_amount: number | null;
+  od_days: number;
+  od_bucket: string;
+  status: string;
+  total_income: number | null;
+  total_expense: number | null;
+  foir: number | null;
+  age: number;
+  cycle: number;
+  paid_within_30d?: number | null;
+  amount_paid_30d?: number | null;
+  created_at?: Date;
+  updated_at?: Date;
+}
